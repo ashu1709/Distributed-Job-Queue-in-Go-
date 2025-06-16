@@ -1,125 +1,109 @@
-Distributed Job Queue in Go
+# ⚙️ Distributed Job Queue in Go
 
-A scalable and resilient distributed task queue system built in Go, designed for high-performance background job execution and reliable task management across services.
+A robust, distributed background task queue built in **Go**, designed for scalability, concurrency, and reliability.  
+It handles asynchronous job execution across different services, with support for various job types and scheduling strategies.
 
-🔧 Key Features
-Parallel Job Processing — Efficient use of goroutines for handling multiple jobs concurrently
+---
 
-Redis-backed Queue — Fast and reliable job queuing mechanism using Redis
+## 🔑 Key Features
 
-Recurring Task Scheduling — Supports cron-style recurring jobs
+- 🚀 High-performance concurrent processing using Go routines  
+- 🧠 Topic-aware job handlers for emails, image processing, and data tasks  
+- 🧾 Job queue powered by Redis for fast and persistent task management  
+- 📆 Built-in scheduler for recurring jobs using cron-like syntax  
+- 🧪 RESTful API to enqueue new jobs from external services  
+- ⚙️ Configurable worker pool size and timeout via environment or config file  
+- 📉 Intelligent polling with exponential backoff strategy  
+- 🗃️ Job result persistence using PostgreSQL  
+- 🧩 Modular structure: workers, handlers, scheduler, storage, queue, and config components
 
-RESTful Job API — Easily submit tasks through an HTTP interface
+---
 
-Configurable Execution — Tune worker count, timeout duration, and queue behavior
+## 🧱 System Components
 
-Exponential Backoff — Optimized retry and polling strategy for reduced load
+### 🔧 Worker (`worker.go`)
+- Pulls jobs from Redis queue and processes them concurrently  
+- Uses custom handlers based on job type  
+- Implements exponential backoff for efficient polling
 
-Multiple Job Types Supported — Out-of-the-box support for:
+### 🕒 Scheduler (`scheduler.go`)
+- Supports recurring tasks using cron-style expressions
 
-Email notifications
+### 📦 Queue (`queue.go`)
+- Manages job enqueue/dequeue and status updates in Redis
 
-Image processing
+### 🧾 Job Definitions (`job.go`)
+- Structures supported jobs: email, image processing, data pipelines
 
-Custom data jobs
+### 🧠 Handlers (`handler.go`)
+- Implements logic for processing each type of job
 
-Persistent Job Result Storage — Uses PostgreSQL to log and retrieve job outcomes
+### 🗃️ Storage (`storage.go`)
+- Persists job results using PostgreSQL
 
-🧱 Core Components
-🧑‍🔧 Worker (worker.go)
-Handles job execution:
+### ⚙️ Configuration (`config.go`)
+- Managed via Viper, supports `.env` and config-based overrides
 
-Executes tasks in parallel
+---
 
-Dynamically dispatches to appropriate handlers
+## 🚀 Getting Started
 
-Implements exponential backoff logic for polling
+1. Make sure **Redis** and **PostgreSQL** are running.
+2. Configure the environment variables or `config.go` settings.
+3. Start the application:
+   ```bash
+   go run main.go
+   ```
 
-📅 Scheduler (scheduler.go)
-Schedules recurring tasks using cron-like expressions.
+---
 
-🗃️ Queue (queue.go)
-Implements Redis-based job operations:
+## 🌐 API Example
 
-Enqueue
+Submit a job via HTTP:
 
-Dequeue
-
-Status tracking
-
-🧾 Job Definition (job.go)
-Defines structured formats for various jobs:
-
-Email
-
-Image resizing
-
-Data transformations
-
-🔧 Handlers (handler.go)
-Contains logic to process each job type:
-
-Email sending
-
-Image manipulation
-
-Data crunching
-
-🛢️ Storage (storage.go)
-Handles job result persistence using PostgreSQL.
-
-⚙️ Configuration (config.go)
-Uses Viper to manage:
-
-Redis connection settings
-
-Worker pool size
-
-API server configuration
-
-Timeout durations
-
-🚀 Getting Started
-Ensure Redis and PostgreSQL are installed and running.
-
-Configure parameters in config.go or set environment variables.
-
-Run the main Go application.
-
-Submit jobs through a POST request to the /submit endpoint.
-
-🧪 API Usage Example
-Endpoint: POST /submit
-Headers: Content-Type: application/json
-
-Payload:
-
-json
-
+**Endpoint:** `POST /submit`  
+**Headers:** `Content-Type: application/json`  
+**Body:**
+```json
 {
   "type": "email",
   "payload": {
     "to": "user@example.com",
-    "subject": "Test Email",
-    "body": "This is a test email."
+    "subject": "Hello",
+    "body": "This is a sample email."
   }
 }
-⚙️ Environment Configuration
-You can override defaults using environment variables:
+```
 
-Variable	Description	Default
-REDISADDR	Redis server address	127.0.0.1:6379
-MAXRETRIES	Max number of job retries	5
-WORKERCOUNT	Number of parallel workers	10
-APIADDR	API server bind address	127.0.0.1:8080
-WORKERTIMEOUT	Worker timeout in seconds	10
+---
 
-➕ Adding New Job Types
-Define the job schema in job.go
+## ⚙️ Configuration via Environment Variables
 
-Implement its logic in handler.go
+| Variable         | Purpose                            | Default              |
+|------------------|------------------------------------|----------------------|
+| `REDISADDR`      | Redis server address               | `127.0.0.1:6379`     |
+| `MAXRETRIES`     | Max retry attempts for a job       | `5`                  |
+| `WORKERCOUNT`    | Number of concurrent workers       | `10`                 |
+| `APIADDR`        | API server bind address            | `127.0.0.1:8080`     |
+| `WORKERTIMEOUT`  | Time in seconds before worker exits| `10`                 |
 
-Register it within main.go
+---
 
-🤝 Contributions
-Open to contributions! Please fork the repo and create a pull request.
+## 🔌 Extending the System
+
+To add a new job type:
+1. Define the new job schema in `job.go`  
+2. Implement its handler logic in `handler.go`  
+3. Register the new handler in `main.go`
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to fork, build on, or submit pull requests.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
